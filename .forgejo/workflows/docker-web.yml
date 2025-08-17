@@ -3,29 +3,25 @@ name: Build web image
 on:
   push:
     branches:
-      - awoo
-  workflow_dispatch:
+      - main
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: write
+    runs-on: ubuntu-fat
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ghcr.io
-          username: caninetools
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: git.canine.tools
+          username: hyperdefined
+          password: ${{ secrets.ORG_TOKEN }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -33,4 +29,4 @@ jobs:
           context: .
           file: ./docker-build/Dockerfile-web
           push: true
-          tags: ghcr.io/caninetools/cobalt:web
+          tags: git.canine.tools/canine.tools/cobalt:web
