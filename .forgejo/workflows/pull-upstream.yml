@@ -1,0 +1,90 @@
+name: Pull upstream
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 5 * * *"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  UPSTREAM_URL: https://github.com/imputnet/cobalt.git
+  UPSTREAM_BRANCH: main
+  SYNC_BRANCH: upstream-sync
+
+  BOT_USER: barkgit-bot
+  BOT_EMAIL: barkgit-bot@canine.tools
+
+jobs:
+  sync:
+    runs-on: docker
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configure git
+        run: |
+          git config user.name  "${BOT_USER}"
+          git config user.email "${BOT_EMAIL}"
+
+      - name: Add & fetch upstream
+        run: |
+          if git remote get-url upstream >/dev/null 2>&1; then
+            git remote set-url upstream "$UPSTREAM_URL"
+          else
+            git remote add upstream "$UPSTREAM_URL"
+          fi
+          git fetch --prune upstream
+
+      - name: Prepare sync branch
+        shell: bash
+        run: |
+          # Base off repo default branch (fallback: main)
+          BASE_BRANCH="${{ github.ref_name || 'main' }}"
+          git fetch --prune origin
+          git checkout -B "$SYNC_BRANCH" "origin/${BASE_BRANCH}" || git checkout -B "$SYNC_BRANCH"
+
+          set +e
+          git merge --no-edit "upstream/$UPSTREAM_BRANCH"
+          MERGE_STATUS=$?
+          set -e
+
+          if [ $MERGE_STATUS -ne 0 ]; then
+            echo "::error::Merge from upstream failed; please resolve conflicts."
+            exit 1
+          fi
+
+          if git diff --quiet --exit-code; then
+            echo "No changes from upstream; exiting."
+            exit 0
+          fi
+
+      - name: Push sync branch as bot
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        shell: bash
+        run: |
+          REPO_HTTP="${{ github.server_url }}/${{ github.repository }}.git"
+          REPO_HTTP="${REPO_HTTP#https://}"
+          git push --set-upstream "https://${BOT_USER}:${BOT_TOKEN}@${REPO_HTTP}" "$SYNC_BRANCH"
+
+      - name: Create/Update PR
+        uses: maxking/forgejo-create-pr@main
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          base:  ${{ github.ref_name || 'main' }}
+          pr-branch: ${{ env.SYNC_BRANCH }}
+          add-paths: '.'
+          commit-message: "chore: sync from upstream/${{ env.UPSTREAM_BRANCH }}"
+          pr-title: "Sync: upstream ➜ ${{ github.ref_name || 'main' }}"
+          pr-body: |
+            Automated upstream sync.
+
+            - Upstream: `${{ env.UPSTREAM_URL }}@${{ env.UPSTREAM_BRANCH }}`
+            - Branch: `${{ env.SYNC_BRANCH }}`
+          commit-user: ${{ env.BOT_USER }}
+          commit-email: ${{ env.BOT_EMAIL }}
