@@ -1,9 +1,41 @@
 <script>
     import { t } from "$lib/i18n/translations";
+    import { onMount, tick } from "svelte";
+    import { get } from "svelte/store";
+    import dialogs, { createDialog } from "$lib/state/dialogs";
 
     import Omnibox from "$components/save/Omnibox.svelte";
     import Meowbalt from "$components/misc/Meowbalt.svelte";
     import SupportedServices from "$components/save/SupportedServices.svelte";
+
+    onMount(async () => {
+        await tick();
+        setTimeout(() => {
+            if (get(dialogs).length === 0) {
+                createDialog({
+                    id: "download-notice",
+                    type: "small",
+                    meowbalt: "question",
+                    buttons: [
+                        {
+                            text: get(t)("button.sad_okay"),
+                            main: false,
+                            action: () => { },
+                        },
+                        {
+                            text: get(t)("button.see_why"),
+                            main: false,
+                            action: () => {
+                                window.open("https://canine.tools/blog/2025/09/22/notice-about-cobalt-shutting-down/", "_blank", "noopener");
+                            }
+                        },
+                    ],
+                    bodyText:
+                        get(t)("general.closing_warning")
+                });
+            }
+        }, 0);
+    });
 </script>
 
 <svelte:head>

@@ -25,5 +25,7 @@
     "clear_cache": "clear cache",
     "remove": "remove",
     "retry": "retry",
-    "delete": "delete"
+    "delete": "delete",
+    "sad_okay": "okay :(",
+    "see_why": "why?"
 }
