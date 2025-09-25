@@ -1,3 +1,4 @@
+import ipaddr from "ipaddr.js";
 import { Constants } from "youtubei.js";
 import { services } from "../processing/service-config.js";
 import { updateEnv, canonicalEnv, env as currentEnv } from "../config.js";
@@ -105,7 +106,11 @@ export const loadEnvs = (env = process.env) => {
 
         sessionEnabled: env.TURNSTILE_SITEKEY
                             && env.TURNSTILE_SECRET
-                            && env.JWT_SECRET,
+                            && env.JWT_SECRET
+                            && !env.MEOWING_SESSION_REQUIRED_FOR,
+
+        sessionRequiredCIDRs: env.MEOWING_SESSION_REQUIRED_FOR?.split(",")
+            .map(cidr => ipaddr.parseCIDR(cidr)),
 
         apiKeyURL: env.API_KEY_URL && new URL(env.API_KEY_URL),
         authRequired: env.API_AUTH_REQUIRED === '1',
@@ -121,6 +126,7 @@ export const loadEnvs = (env = process.env) => {
         ytSessionReloadInterval: 300,
         ytSessionInnertubeClient: env.YOUTUBE_SESSION_INNERTUBE_CLIENT,
         ytAllowBetterAudio: env.YOUTUBE_ALLOW_BETTER_AUDIO !== "0",
+        ytPlayerId: env.YOUTUBE_PLAYER_ID,
 
         // "never" | "session" | "always"
         forceLocalProcessing: env.FORCE_LOCAL_PROCESSING ?? "never",
@@ -138,7 +144,7 @@ export const loadEnvs = (env = process.env) => {
 let loggedProxyWarning = false;
 
 export const validateEnvs = async (env) => {
-    if (env.sessionEnabled && env.jwtSecret.length < 16) {
+    if ((env.sessionEnabled || env.MEOWING_SESSION_REQUIRED_FOR) && env.jwtSecret.length < 16) {
         throw new Error("JWT_SECRET env is too short (must be at least 16 characters long)");
     }
 

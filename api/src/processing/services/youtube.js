@@ -1,7 +1,7 @@
 import HLS from "hls-parser";
 
 import { fetch } from "undici";
-import { Innertube, Session } from "youtubei.js";
+import { Innertube, Session, Log, UniversalCache } from "youtubei.js";
 
 import { env } from "../../config.js";
 import { getCookie } from "../cookie/manager.js";
@@ -46,26 +46,34 @@ const clientsWithNoCipher = ['IOS', 'ANDROID', 'YTSTUDIO_ANDROID', 'YTMUSIC_ANDR
 
 const videoQualities = [144, 240, 360, 480, 720, 1080, 1440, 2160, 4320];
 
+let unavailableResponses = 0;
+
+Log.setLevel([]);
+
 const cloneInnertube = async (customFetch, useSession) => {
-    const shouldRefreshPlayer = lastRefreshedAt + PLAYER_REFRESH_PERIOD < new Date();
+    const shouldRefreshPlayer = globalThis.FORCE_RESET_INNERTUBE_PLAYER || lastRefreshedAt + PLAYER_REFRESH_PERIOD < new Date();
 
     const rawCookie = getCookie('youtube');
     const cookie = rawCookie?.toString();
 
     const sessionTokens = getYouTubeSession();
-    const retrieve_player = Boolean(sessionTokens || cookie);
+    const retrieve_player = true;
 
     if (useSession && env.ytSessionServer && !sessionTokens?.potoken) {
         throw "no_session_tokens";
     }
 
     if (!innertube || shouldRefreshPlayer) {
+        globalThis.FORCE_RESET_INNERTUBE_PLAYER = false;
         innertube = await Innertube.create({
+            cache: new UniversalCache(false),
             fetch: customFetch,
             retrieve_player,
             cookie,
             po_token: useSession ? sessionTokens?.potoken : undefined,
             visitor_data: useSession ? sessionTokens?.visitor_data : undefined,
+            enable_session_cache: false,
+            player_id: env.ytPlayerId,
         });
         lastRefreshedAt = +new Date();
     }
@@ -253,6 +261,8 @@ export default async function (o) {
     switch (playability.status) {
         case "LOGIN_REQUIRED":
             if (playability.reason.endsWith("bot")) {
+                // Instantly refresh
+                lastRefreshedAt = +new Date(0);
                 return { error: "youtube.login" }
             }
             if (playability.reason.endsWith("age") || playability.reason.endsWith("inappropriate for some users.")) {
@@ -267,6 +277,10 @@ export default async function (o) {
             if (playability?.reason?.endsWith("request limit.")) {
                 return { error: "fetch.rate" }
             }
+            if (playability?.reason?.endsWith("bot")) {
+                lastRefreshedAt = +new Date(0);
+                return { error: "youtube.login" }
+            }
             if (playability?.error_screen?.subreason?.text?.endsWith("in your country")) {
                 return { error: "content.video.region" }
             }
@@ -280,6 +294,12 @@ export default async function (o) {
     }
 
     if (playability.status !== "OK") {
+        // Force refresh player once we get 10 unavailable videos
+        unavailableResponses ??= 0;
+        if (unavailableResponses++ > 10) {
+            lastRefreshedAt = +new Date(0);
+            unavailableResponses = 0;
+        }
         return { error: "content.video.unavailable" };
     }
 
