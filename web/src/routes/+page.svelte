@@ -15,7 +15,7 @@
                 createDialog({
                     id: "download-notice",
                     type: "small",
-                    meowbalt: "question",
+                    meowbalt: "smile",
                     buttons: [
                         {
                             text: get(t)("button.gotit"),
