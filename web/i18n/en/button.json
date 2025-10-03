@@ -26,6 +26,5 @@
     "remove": "remove",
     "retry": "retry",
     "delete": "delete",
-    "sad_okay": "okay :(",
-    "see_why": "read why"
+    "cobalt_directory": "cobalt.directory"
 }

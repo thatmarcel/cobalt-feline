@@ -18,20 +18,20 @@
                     meowbalt: "question",
                     buttons: [
                         {
-                            text: get(t)("button.sad_okay"),
+                            text: get(t)("button.gotit"),
                             main: false,
                             action: () => { },
                         },
                         {
-                            text: get(t)("button.see_why"),
+                            text: get(t)("button.cobalt_directory"),
                             main: false,
                             action: () => {
-                                window.open("https://canine.tools/blog/2025/09/22/notice-about-cobalt-shutting-down/", "_blank", "noopener");
+                                window.open("https://cobalt.directory", "_blank", "noopener");
                             }
-                        },
+                        }
                     ],
                     bodyText:
-                        get(t)("general.closing_warning")
+                        get(t)("general.main_status")
                 });
             }
         }, 0);
