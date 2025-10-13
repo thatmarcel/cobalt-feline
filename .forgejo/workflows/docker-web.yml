@@ -27,6 +27,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./docker-build/Dockerfile-web
+          file: ./web/Dockerfile
           push: true
           tags: git.canine.tools/canine.tools/cobalt:web
