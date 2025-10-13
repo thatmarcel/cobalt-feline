@@ -23,6 +23,6 @@ RUN pnpm run build
 FROM caddy:alpine AS final
 WORKDIR /srv
 COPY --from=builder /app/web/build /srv
-COPY docker-build/Caddyfile /etc/caddy/Caddyfile
+COPY web/Caddyfile /etc/caddy/Caddyfile
 
 EXPOSE 80
