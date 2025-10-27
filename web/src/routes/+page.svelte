@@ -1,15 +1,42 @@
 <script>
     import { t } from "$lib/i18n/translations";
+    import { onMount, tick } from "svelte";
+    import { get } from "svelte/store";
+    import dialogs, { createDialog } from "$lib/state/dialogs";
 
     import Omnibox from "$components/save/Omnibox.svelte";
     import Meowbalt from "$components/misc/Meowbalt.svelte";
     import SupportedServices from "$components/save/SupportedServices.svelte";
-</script>
 
-<svelte:head>
-    <title>{$t("general.cobalt")}</title>
-    <meta property="og:title" content={$t("general.cobalt")} />
-</svelte:head>
+    onMount(async () => {
+        await tick();
+        setTimeout(() => {
+            if (get(dialogs).length === 0) {
+                createDialog({
+                    id: "download-notice",
+                    type: "small",
+                    meowbalt: "smile",
+                    buttons: [
+                        {
+                            text: get(t)("button.gotit"),
+                            main: true,
+                            action: () => { },
+                        },
+                        {
+                            text: get(t)("button.patrick"),
+                            main: false,
+                            action: () => {
+                                window.open("https://patriick.dev/", "_blank", "noopener");
+                            }
+                        }
+                    ],
+                    bodyText:
+                        get(t)("general.main_status")
+                });
+            }
+        }, 0);
+    });
+</script>
 
 <div id="cobalt-save-container" class="center-column-container">
     <SupportedServices />
