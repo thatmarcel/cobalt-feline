@@ -20,9 +20,7 @@ this cobalt instances is hosted by the [canine.tools project](https://canine.too
 
 we use a vpn for all outbound requests.
 
-youtube is known to not work 100% of the time. we use a session server for youtube, so keep trying until it works.
-
-other services should work fine.
+thank you to [patrick](https://patriick.dev/) for helping with youtube support. because of them, they were able to get youtube support for us a few times back up!
 </section>
 
 <section id="apikeys">
@@ -57,9 +55,9 @@ we don't generally monitor requests, but we may contact you if we see anything s
     sectionId="fork"
 />
 
-our instance (web and api) is running a fork of the main cobalt codebase. it's licensed under the same license. you can find all changes on [our repository](https://github.com/caninetools/cobalt).
+our instance (web and api) is running a fork of the main cobalt codebase. it's licensed under the same license. you can find all changes on [our repository](https://git.canine.tools/canine.tools/cobalt).
 
-* [api license](https://github.com/caninetools/cobalt/blob/main/api/README.md#license)
-* [web license](https://github.com/caninetools/cobalt/blob/main/web/README.md#license)
+* [api license](https://git.canine.tools/canine.tools/cobalt/src/branch/main/api#license)
+* [web license](https://git.canine.tools/canine.tools/cobalt/src/branch/main/web#license)
 
 </section>

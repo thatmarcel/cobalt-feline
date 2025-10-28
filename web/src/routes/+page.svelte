@@ -21,13 +21,6 @@
                             text: get(t)("button.gotit"),
                             main: true,
                             action: () => { },
-                        },
-                        {
-                            text: get(t)("button.patrick"),
-                            main: false,
-                            action: () => {
-                                window.open("https://patriick.dev/", "_blank", "noopener");
-                            }
                         }
                     ],
                     bodyText:
