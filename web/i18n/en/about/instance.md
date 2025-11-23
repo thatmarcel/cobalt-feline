@@ -31,7 +31,7 @@ thank you to [patrick](https://patriick.dev/) for helping with youtube support. 
 
 we offer api keys for developers to use. keys are given by request once we approved your usage. they can be revoked at anytime without warning.
 
-if you want an api key, please email [hyper@canine.tools](mailto:hyper@canine.tools) ([PGP key](https://canine.tools/assets/hyper%40canine.tools.asc)). please email for a key, do not contact the maintainer via other methods or they will be ignored.
+if you want an api key, please email [hyper@canine.tools](mailto:hyper@canine.tools) ([PGP key](https://canine.tools/assets/hyper@canine.tools.asc)). please email for a key, do not contact the maintainer via other methods or they will be ignored.
 
 when you request an api key, please include the following:
 
