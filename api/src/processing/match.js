@@ -113,7 +113,8 @@ export default async function({ host, patternMatch, params, authType }) {
             case "youtube":
                 let fetchInfo = {
                     dispatcher,
-                    id: patternMatch.id.slice(0, 11),
+                    id: patternMatch.id?.slice(0, 11),
+                    postId: patternMatch.postId,
                     quality: params.videoQuality,
                     codec: params.youtubeVideoCodec,
                     container: params.youtubeVideoContainer,
@@ -122,6 +123,7 @@ export default async function({ host, patternMatch, params, authType }) {
                     dubLang: params.youtubeDubLang,
                     youtubeHLS,
                     subtitleLang,
+                    alwaysProxy: params.alwaysProxy,
                 }
 
                 if (url.hostname === "music.youtube.com" || isAudioOnly) {
