@@ -7,7 +7,6 @@ import { env } from "../../config.js";
 import { getCookie } from "../cookie/manager.js";
 import { createStream } from "../../stream/manage.js";
 import { getYouTubeSession } from "../helpers/youtube-session.js";
-import { getBasicInfo } from "../helpers/youtube-onesie.js";
 
 const PLAYER_REFRESH_PERIOD = 1000 * 60 * 15; // ms
 
@@ -71,6 +70,7 @@ const youtubeEval = async (data, env) => {
     return vm.runInNewContext(code);
 }
 
+let encryptedHostFlags = "";
 const cloneInnertube = async (customFetch, useSession) => {
     Platform.shim.eval = youtubeEval;
     const shouldRefreshPlayer = globalThis.FORCE_RESET_INNERTUBE_PLAYER || lastRefreshedAt + PLAYER_REFRESH_PERIOD < new Date();
@@ -98,6 +98,20 @@ const cloneInnertube = async (customFetch, useSession) => {
             player_id: env.ytPlayerId,
         });
         lastRefreshedAt = +new Date();
+
+        const embedResp = await customFetch("https://youtube.com/embed/QfKmnuHMpYo", {
+            headers: {
+                "Referer": "https://www.google.com"
+            }
+        })
+            .then(r => r.text());
+        
+        const hostFlagsMatch = /encryptedHostFlags":"(.+?)"/.exec(embedResp);
+        if (hostFlagsMatch?.length > 1) {
+            encryptedHostFlags = hostFlagsMatch[1];
+        } else {
+            console.error(new Date(), "Could not fetch encryptedHostFlags, no match!");
+        }
     }
 
     const session = new Session(
@@ -273,10 +287,10 @@ export default async function (o) {
         );
 
     // we can get subtitles reliably only from the iOS client
-    if (o.subtitleLang) {
-        innertubeClient = "IOS";
-        useSession = false;
-    }
+    // if (o.subtitleLang) {
+    //     innertubeClient = "IOS";
+    //     useSession = false;
+    // }
 
     if (useSession) {
         innertubeClient = env.ytSessionInnertubeClient || "WEB_EMBEDDED";
@@ -307,7 +321,22 @@ export default async function (o) {
 
     let info;
     try {
-        info = await getBasicInfo(yt, o.id, innertubeClient);
+        info = await yt.actions.execute("/player", {
+            videoId: o.id,
+            client: innertubeClient,
+            parse: true,
+            playbackContext: {
+                contentPlaybackContext: {
+                    encryptedHostFlags,
+                    vis: 0,
+                    splay: false,
+                    lactMilliseconds: '-1',
+                    signatureTimestamp: yt.session.player?.signature_timestamp,
+                }
+            }
+        });
+
+        // info = await yt.getBasicInfo(o.id, { client: innertubeClient });
     } catch (e) {
         if (e?.info) {
             let errorInfo;
@@ -326,8 +355,12 @@ export default async function (o) {
             // across an innertube session for me
             // resetting the session seems to fix it
             // temporarily?
-            if (e?.info?.error_screen?.subreason?.text == "Error code: 18") {
+
+            // Error code: 152 - 18
+            // Error code: 18
+            if (e?.info?.error_screen?.subreason?.toString()?.endsWith(" 18")) {
                 lastRefreshedAt = +new Date(0);
+                console.log(e.info.error_screen.subreason);
                 return { error: "content.video.unavailable", retry: true };
             }
 
@@ -340,7 +373,7 @@ export default async function (o) {
     if (!info) return { error: "fetch.fail" };
 
     const playability = info.playability_status;
-    const basicInfo = info.basic_info;
+    const basicInfo = info.video_details;
 
     switch (playability.status) {
         case "LOGIN_REQUIRED":
