@@ -1,7 +1,8 @@
-import { commandOptions, createClient } from "redis";
+import redis from "redis";
 import { env } from "../config.js";
 import { Store } from "./base-store.js";
 
+const { createClient, commandOptions } = redis;
 export default class RedisStore extends Store {
     #client = createClient({
         url: env.redisURL,
