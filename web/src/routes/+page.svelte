@@ -6,6 +6,11 @@
     import SupportedServices from "$components/save/SupportedServices.svelte";
 </script>
 
+<svelte:head>
+    <title>{$t("general.cobalt")}</title>
+    <meta property="og:title" content={$t("general.cobalt")} />
+</svelte:head>
+
 <div id="cobalt-save-container" class="center-column-container">
     <SupportedServices />
     <main
