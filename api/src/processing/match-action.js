@@ -182,6 +182,7 @@ export default function({
                 case "ok":
                 case "xiaohongshu":
                 case "newgrounds":
+                case "bsky":
                     params = { type: "proxy" };
                     break;
 
