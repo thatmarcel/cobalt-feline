@@ -77,7 +77,6 @@ export function createResponse(responseType, responseData) {
                 if (!response.audio.format) {
                     if (response.type === "audio") {
                         // audio response without a format is invalid
-                        console.log("audio response without a format is invalid")
                         return internalError();
                     }
                     delete response.audio;
@@ -85,7 +84,6 @@ export function createResponse(responseType, responseData) {
 
                 if (!response.output.type || !response.output.filename) {
                     // response without a type or filename is invalid
-                    console.log("response without a type or filename is invalid")
                     return internalError();
                 }
                 break;
@@ -99,9 +97,6 @@ export function createResponse(responseType, responseData) {
                 break;
 
             case "critical":
-                console.log("responseType returned critical");
-                console.log(responseType);
-                console.log(responseData);
                 return internalError(responseData?.code);
 
             default:
@@ -116,10 +111,6 @@ export function createResponse(responseType, responseData) {
             }
         }
     } catch (error) {
-        console.log("createResponse try-catch failed")
-        console.error(error);
-        console.log(responseType);
-        console.log(responseData);
         return internalError();
     }
 }
