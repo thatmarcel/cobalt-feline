@@ -17,7 +17,7 @@ jobs:
               uses: oven-sh/setup-bun@ecf28ddc73e819eb6fa29df6b34ef8921c743461
 
             - name: Run build
-              run: bun install && bun run web:build
+              run: bun install && cd web && bun run build
               env: # Or as an environment variable
                   WEB_HOST: ${{ secrets.WEB_HOST }}
                   WEB_DEFAULT_API: ${{ secrets.WEB_DEFAULT_API }}
