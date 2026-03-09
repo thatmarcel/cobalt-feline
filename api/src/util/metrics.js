@@ -13,14 +13,14 @@ collectDefaultMetrics({
 const httpRequests = new Counter({
     name: "http_requests_total",
     help: "Total HTTP requests",
-    labelNames: ["method", "route", "status", "worker_id"],
+    labelNames: ["method", "route", "status"],
     registry: [registry]
 });
 
 const httpDuration = new Histogram({
     name: "http_request_duration_seconds",
     help: "HTTP request duration in seconds",
-    labelNames: ["method", "route", "status", "worker_id"],
+    labelNames: ["method", "route", "status"],
     buckets: [0.05, 0.1, 0.3, 0.5, 1, 2, 5],
     registry: [registry]
 });
@@ -28,35 +28,35 @@ const httpDuration = new Histogram({
 const serviceRequestsTotal = new Counter({
     name: "service_requests_total",
     help: "Total requests per service",
-    labelNames: ["service", "worker_id"],
+    labelNames: ["service"],
     registry: [registry],
 });
 
 const serviceRequestsSuccess = new Counter({
     name: "service_requests_success_total",
     help: "Successful requests per service",
-    labelNames: ["service", "worker_id"],
+    labelNames: ["service",],
     registry: [registry],
 });
 
 const serviceRequestsFailed = new Counter({
     name: "service_requests_failed_total",
     help: "Failed requests per service",
-    labelNames: ["service", "error_type", "worker_id"],
+    labelNames: ["service", "error_type"],
     registry: [registry],
 });
 
 const serviceResponsesTotal = new Counter({
     name: "service_responses_total",
     help: "Total responses by service",
-    labelNames: ["type", "worker_id"],
+    labelNames: ["type"],
     registry: [registry],
 });
 
 const serviceDataDownload = new Counter({
     name: "service_data_download_total",
     help: "Total data downloaded in bytes by service",
-    labelNames: ["service", "worker_id"],
+    labelNames: ["service"],
     registry: [registry],
 });
 
@@ -90,27 +90,31 @@ export function httpRequestMetrics(req, res, next) {
     const route = req.route?.path || "unknown";
 
     res.on("finish", () => {
-        httpRequests.labels(req.method, route, res.statusCode, WORKER_ID).inc();
-        endTimer({ method: req.method, route, status: res.statusCode, worker_id: WORKER_ID });
+        httpRequests.labels(req.method, route, res.statusCode).inc();
+        endTimer({ method: req.method, route, status: res.statusCode });
     });
 
     next();
 }
 
 export function addServiceResponse(type) {
-    serviceResponsesTotal.labels(type, WORKER_ID).inc();
+    serviceResponsesTotal.labels(type).inc();
 }
 
 export function addServiceRequest(service) {
-    serviceRequestsTotal.labels(service, WORKER_ID).inc();
+    serviceRequestsTotal.labels(service).inc();
+}
+
+export function addServiceSuccessful(service) {
+    serviceRequestsSuccess.labels(service).inc();
 }
 
 export function addServiceError(service, error) {
-    serviceRequestsFailed.labels(service, error, WORKER_ID).inc();
+    serviceRequestsFailed.labels(service, error).inc();
 }
 
 export function addServiceDataDownload(service, size) {
-    serviceDataDownload.labels(service, WORKER_ID).inc(size);
+    serviceDataDownload.labels(service).inc(size);
 }
 
 export function addFailedApiRequest(error) {
