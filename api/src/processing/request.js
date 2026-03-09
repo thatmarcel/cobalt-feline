@@ -3,6 +3,8 @@ import ipaddr from "ipaddr.js";
 
 import { apiSchema } from "./schema.js";
 import { createProxyTunnels, createStream } from "../stream/manage.js";
+import { addServiceResponse, addServiceError } from "../util/metrics.js";
+import { metrics } from "../core/api.js";
 
 export function createResponse(responseType, responseData) {
     const internalError = (code) => {
@@ -101,6 +103,11 @@ export function createResponse(responseType, responseData) {
 
             default:
                 throw "unreachable"
+        }
+
+        if (metrics) {
+            addServiceResponse(responseType);
+            if (responseType == "error") addServiceError(response.error.context.service, response.error.code);
         }
 
         return {

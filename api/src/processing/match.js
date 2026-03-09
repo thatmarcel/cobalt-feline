@@ -8,6 +8,9 @@ import matchAction from "./match-action.js";
 
 import { friendlyServiceName } from "./service-alias.js";
 
+import { metrics } from "../core/api.js";
+import { addServiceRequest } from "../util/metrics.js";
+
 import bilibili from "./services/bilibili.js";
 import reddit from "./services/reddit.js";
 import twitter from "./services/twitter.js";
@@ -76,6 +79,8 @@ export default async function({ host, patternMatch, params, authType }) {
 
         const subtitleLang =
             params.subtitleLang !== "none" ? params.subtitleLang : undefined;
+        
+        if (metrics) addServiceRequest(host);
 
         switch (host) {
             case "twitter":
