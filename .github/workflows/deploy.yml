@@ -18,12 +18,12 @@ jobs:
 
             - name: Run build
               run: bun install && cd web && bun run build
-              env: # Or as an environment variable
+              env:
                   WEB_HOST: ${{ secrets.WEB_HOST }}
                   WEB_DEFAULT_API: ${{ secrets.WEB_DEFAULT_API }}
 
-            - name: Deploy to BunnyCDN
-              uses: ayeressian/bunnycdn-storage-deploy@251c77f4b9e7e683ad00086de2bef5770c3386b2
+            - name: Deploy to bunny.net
+              uses: ayeressian/bunnycdn-storage-deploy@922e816641b3aab7c5b4039abfd416ff3ae970c4
               with:
                 source: "./web/build"
                 destination: "."
