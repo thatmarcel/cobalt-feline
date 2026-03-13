@@ -354,7 +354,8 @@ export default async function({ host, patternMatch, params, authType }) {
             alwaysProxy: params.alwaysProxy || localProcessing === "forced",
             localProcessing,
         })
-    } catch {
+    } catch (error) {
+        console.error(error);
         return createResponse("error", {
             code: "error.api.fetch.critical",
             context: {

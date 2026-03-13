@@ -124,6 +124,7 @@ export function createResponse(responseType, responseData) {
             }
         }
     } catch (error) {
+        console.error(error);
         return internalError();
     }
 }
