@@ -29,6 +29,7 @@
         "@imput/psl": "^2.0.4",
         "@imput/version-info": "workspace:^",
         "bgutils-js": "^3.2.0",
+        "canvas": "^3.2.1",
         "content-disposition-header": "0.6.0",
         "cors": "^2.8.5",
         "dotenv": "^17.2.3",
