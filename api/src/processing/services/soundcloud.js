@@ -15,29 +15,34 @@ async function findClientID() {
             return cachedID.id;
         }
 
-        const scripts = sc.matchAll(/<script.+src="(.+)">/g);
-
-        let clientid;
-        for (let script of scripts) {
-            const url = script[1];
-
-            if (!url?.startsWith('https://a-v2.sndcdn.com/')) {
-                return;
-            }
-
-            const scrf = await fetch(url).then(r => r.text()).catch(() => {});
-            const id = scrf.match(/\("client_id=[A-Za-z0-9]{32}"\)/);
-
-            if (id && typeof id[0] === 'string') {
-                clientid = id[0].match(/[A-Za-z0-9]{32}/)[0];
-                break;
+        let clientid = sc.match(/"hydratable"\s*:\s*"apiClient"\s*,\s*"data"\s*:\s*\{\s*"id"\s*:\s*"([^"]+)"/)?.[1];
+        if (!clientid) { // if its not in the html, loop through scripts until we find it
+            const scripts = sc.matchAll(/<script.+src="(.+)">/g);
+    
+            for (let script of scripts) {
+                const url = script[1];
+    
+                if (!url?.startsWith('https://a-v2.sndcdn.com/')) {
+                    return;
+                }
+    
+                const scrf = await fetch(url).then(r => r.text()).catch(() => {});
+                const id = scrf.match(/,client_id:"([A-Za-z0-9]{32})",/);
+    
+                if (id && id.length >= 2) {
+                    clientid = id[1];
+                    break;
+                }
             }
         }
+
+        if (!clientid) return;
+
         cachedID.version = scVersion;
         cachedID.id = clientid;
 
         return clientid;
-    } catch {}
+    } catch {} 
 }
 
 const findBestForPreset = (transcodings, preset) => {

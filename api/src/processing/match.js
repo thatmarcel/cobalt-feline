@@ -8,6 +8,9 @@ import matchAction from "./match-action.js";
 
 import { friendlyServiceName } from "./service-alias.js";
 
+import { metrics } from "../core/api.js";
+import { addServiceRequest, addServiceSuccessful } from "../util/metrics.js";
+
 import bilibili from "./services/bilibili.js";
 import reddit from "./services/reddit.js";
 import twitter from "./services/twitter.js";
@@ -76,6 +79,8 @@ export default async function({ host, patternMatch, params, authType }) {
 
         const subtitleLang =
             params.subtitleLang !== "none" ? params.subtitleLang : undefined;
+        
+        if (metrics) addServiceRequest(host);
 
         switch (host) {
             case "twitter":
@@ -113,7 +118,8 @@ export default async function({ host, patternMatch, params, authType }) {
             case "youtube":
                 let fetchInfo = {
                     dispatcher,
-                    id: patternMatch.id.slice(0, 11),
+                    id: patternMatch.id?.slice(0, 11),
+                    postId: patternMatch.postId,
                     quality: params.videoQuality,
                     codec: params.youtubeVideoCodec,
                     container: params.youtubeVideoContainer,
@@ -122,6 +128,7 @@ export default async function({ host, patternMatch, params, authType }) {
                     dubLang: params.youtubeDubLang,
                     youtubeHLS,
                     subtitleLang,
+                    alwaysProxy: params.alwaysProxy,
                 }
 
                 if (url.hostname === "music.youtube.com" || isAudioOnly) {
@@ -307,6 +314,7 @@ export default async function({ host, patternMatch, params, authType }) {
                 case "fetch.critical":
                 case "link.unsupported":
                 case "content.video.unavailable":
+                case "service.broken":
                     context = {
                         service: friendlyServiceName(host),
                     }
@@ -328,6 +336,10 @@ export default async function({ host, patternMatch, params, authType }) {
             localProcessing = "preferred";
         }
 
+        // this is probably the wrong spot to do this
+        // but if we got this far without issues then we probably successful
+        if (metrics) addServiceSuccessful(host);
+
         return matchAction({
             r,
             host,
@@ -342,7 +354,8 @@ export default async function({ host, patternMatch, params, authType }) {
             alwaysProxy: params.alwaysProxy || localProcessing === "forced",
             localProcessing,
         })
-    } catch {
+    } catch (error) {
+        console.error(error);
         return createResponse("error", {
             code: "error.api.fetch.critical",
             context: {
