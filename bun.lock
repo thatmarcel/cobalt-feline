@@ -29,7 +29,7 @@
         "set-cookie-parser": "2.7.2",
         "undici": "^6.22.0",
         "url-pattern": "1.0.3",
-        "youtubei.js": "github:LuanRT/YouTube.js#f9bd5d0e8db39dcb6c68ccc52446fbaa793e04fa",
+        "youtubei.js": "github:LuanRT/YouTube.js#0449b65495963f1a85b0a68ff6ef1013886ccda0",
         "zod": "^4.2.1",
       },
       "optionalDependencies": {
@@ -1019,7 +1019,7 @@
 
     "yocto-queue": ["yocto-queue@0.1.0", "", {}, "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q=="],
 
-    "youtubei.js": ["youtubei.js@github:LuanRT/YouTube.js#f9bd5d0", { "dependencies": { "@bufbuild/protobuf": "^2.0.0", "meriyah": "^6.1.4" } }, "LuanRT-YouTube.js-f9bd5d0"],
+    "youtubei.js": ["youtubei.js@github:LuanRT/YouTube.js#0449b65", { "dependencies": { "@bufbuild/protobuf": "^2.0.0", "meriyah": "^6.1.4" } }, "LuanRT-YouTube.js-0449b65"],
 
     "zimmerframe": ["zimmerframe@1.1.4", "", {}, "sha512-B58NGBEoc8Y9MWWCQGl/gq9xBCe4IiKM0a2x7GZdQKOW5Exr8S1W24J6OgM1njK8xCRGvAJIL/MxXHf6SkmQKQ=="],
 
