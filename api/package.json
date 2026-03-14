@@ -9,9 +9,9 @@
         "node": ">=18"
     },
     "scripts": {
-        "start": "node src/cobalt",
-        "test": "node src/util/test",
-        "token:jwt": "node src/util/generate-jwt-secret"
+        "start": "bun run src/cobalt",
+        "test": "bun run src/util/test",
+        "token:jwt": "bun run src/util/generate-jwt-secret"
     },
     "repository": {
         "type": "git",
