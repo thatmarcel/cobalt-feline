@@ -58,7 +58,6 @@ export default (f, style, isAudioOnly, isAudioMuted) => {
     }
 
     switch (style) {
-        default:
         case "classic":
             if (isAudioOnly) {
                 if (f.youtubeDubName) {
@@ -76,6 +75,7 @@ export default (f, style, isAudioOnly, isAudioMuted) => {
             if (isAudioOnly) return `${title} (${infoBase[0]})`;
             filename = `${title} (${[...basicTags, infoBase[0]].join(", ")})`;
             break;
+        default:
         case "nerdy":
             if (isAudioOnly) return `${title} (${infoBase.join(", ")})`;
             filename = `${title} (${basicTags.concat(infoBase).join(", ")})`;

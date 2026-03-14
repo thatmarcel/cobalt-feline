@@ -82,7 +82,7 @@ const fetchEncryptedHostFlags = async (fetch) => {
         }
     })
     .then(r => r.text());
-    
+
     const hostFlagsMatch = /encryptedHostFlags":"(.+?)"/.exec(embedResp);
     if (hostFlagsMatch?.length > 1) {
         encryptedHostFlags = hostFlagsMatch[1];
@@ -144,7 +144,7 @@ const cloneInnertube = async (customFetch, useSession) => {
         }
 
         lastRefreshedAt = +new Date();
-        
+
         if (!useSession && env.customInnertubeClient === "WEB_EMBEDDED") {
             // WEB_EMBEDDED sometimes needs a property named `encryptedHostFlags`, which you
             // can seemingly only get by extracting it out of a player response
@@ -247,8 +247,8 @@ const getSubtitles = async (info, dispatcher, subtitleLang) => {
 }
 
 /**
- * @param {Innertube} yt 
- * @param {*} o 
+ * @param {Innertube} yt
+ * @param {*} o
  */
 const fetchPost = async (yt, o) => {
     const fixImageResolution = (imageUrl) => {
@@ -480,7 +480,7 @@ export default async function (o) {
     }
 
     let video, audio, subtitles, dubbedLanguage,
-        codec = o.codec || "h264", itag = o.itag;
+        codec = o.codec || "av1", itag = o.itag;
 
     if (useHLS) {
         const variants = await getHlsVariants(

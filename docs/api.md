@@ -71,11 +71,11 @@ all keys except for `url` are optional. value options are separated by `/`.
 | key               | type      | description/value                                               | default    |
 |:------------------|:----------|:----------------------------------------------------------------|:-----------|
 | `url`             | `string`  | source URL                                                      | *required* |
-| `audioBitrate`    | `string`  | `320 / 256 / 128 / 96 / 64 / 8` (kbps)                          | `128`      |
-| `audioFormat`     | `string`  | `best / mp3 / ogg / wav / opus`                                 | `mp3`      |
+| `audioBitrate`    | `string`  | `320 / 256 / 128 / 96 / 64 / 8` (kbps)                          | `320`      |
+| `audioFormat`     | `string`  | `best / mp3 / ogg / wav / opus`                                 | `best`      |
 | `downloadMode`    | `string`  | `auto / audio / mute`                                           | `auto`     |
-| `filenameStyle`   | `string`  | `classic / pretty / basic / nerdy`                              | `basic`    |
-| `videoQuality`    | `string`  | `max / 4320 / 2160 / 1440 / 1080 / 720 / 480 / 360 / 240 / 144` | `1080`     |
+| `filenameStyle`   | `string`  | `classic / pretty / basic / nerdy`                              | `nerdy`    |
+| `videoQuality`    | `string`  | `max / 4320 / 2160 / 1440 / 1080 / 720 / 480 / 360 / 240 / 144` | `max`     |
 | `disableMetadata` | `boolean` | title, artist, and other info will not be added to the file     | `false`    |
 | `alwaysProxy`     | `boolean` | always tunnel all files, even when not necessary                | `false`    |
 | `localProcessing` | `string`  | `disabled / preferred / forced`                                 | `disabled` |
@@ -84,13 +84,13 @@ all keys except for `url` are optional. value options are separated by `/`.
 #### service-specific options
 | key                     | type      | description/value                                 | default |
 |:------------------------|:----------|:--------------------------------------------------|:--------|
-| `youtubeVideoCodec`     | `string`  | `h264 / av1 / vp9`                                | `h264`  |
-| `youtubeVideoContainer` | `string`  | `auto / mp4 / webm / mkv`                         | `auto`  |
+| `youtubeVideoCodec`     | `string`  | `h264 / av1 / vp9`                                | `av1`  |
+| `youtubeVideoContainer` | `string`  | `auto / mp4 / webm / mkv`                         | `mkv`  |
 | `youtubeDubLang`        | `string`  | any valid ISO 639-1 language code                 | *none*  |
 | `convertGif`            | `boolean` | convert twitter gifs to the actual GIF format     | `true`  |
-| `allowH265`             | `boolean` | allow H265/HEVC videos from tiktok/xiaohongshu    | `false` |
+| `allowH265`             | `boolean` | allow H265/HEVC videos from tiktok/xiaohongshu    | `true` |
 | `tiktokFullAudio`       | `boolean` | download the original sound used in a video       | `false` |
-| `youtubeBetterAudio`    | `boolean` | prefer higher quality youtube audio if possible   | `false` |
+| `youtubeBetterAudio`    | `boolean` | prefer higher quality youtube audio if possible   | `true` |
 | `youtubeHLS`            | `boolean` | use HLS formats when downloading from youtube     | `false` |
 
 ### response
