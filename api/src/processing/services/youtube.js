@@ -53,24 +53,12 @@ const videoQualities = [144, 240, 360, 480, 720, 1080, 1440, 2160, 4320];
 let unavailableResponses = 0;
 
 // https://ytjs.dev/guide/getting-started.html#providing-a-custom-javascript-interpreter
-const youtubeEval = async (data, env) => {
-    const properties = [];
-
-    if (env.n) {
-        properties.push(`n: exportedVars.nFunction("${env.n}")`)
-    }
-
-    if (env.sig) {
-        properties.push(`sig: exportedVars.sigFunction("${env.sig}")`)
-    }
-
-    const code = `${data.output}\nconst result = { ${properties.join(', ')} }; result`;
-
+const youtubeEval = async (data, _env) => {
     // I'm aware that node's vms are very easy to escape and I
     // probably shouldn't use it here to run arbitrary code
     // fetched from Google - but I kinda trust them
     // also no idea if im using this correctly
-    return vm.runInNewContext(code);
+    return vm.runInNewContext(`(() => { ${data.output} })()`);
 }
 
 
