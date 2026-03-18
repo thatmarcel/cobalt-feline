@@ -9,8 +9,9 @@
         "node": ">=18"
     },
     "scripts": {
+        "build-syscall-napi": "[[ $(uname -s) != Linux ]] || [[ $npm_execpath != */bin/bun ]] || ([ -d ../node_modules/.bun/syscall-napi*/node_modules/syscall-napi/build ] || cd ../node_modules/.bun/syscall-napi*/node_modules/syscall-napi && bun i node-gyp && bun i && cp -R build/Release build/Debug)",
         "build-ytjs": "cd node_modules/youtubei.js && _o=\"$(pwd)\" && _td=\"$(mktemp -d)\" && cp -R ./* \"$_td\" && cd \"$_td\" && bun install && cp -R ./{dist,bundle} \"$_o\" && rm -rf \"$_td\"",
-        "postinstall": "[ -f node_modules/youtubei.js/dist/package.json ] || bun run build-ytjs",
+        "postinstall": "[ -f node_modules/youtubei.js/dist/package.json ] || bun run build-ytjs; bun run build-syscall-napi",
         "start": "bun run src/cobalt",
         "test": "bun run src/util/test",
         "token:jwt": "bun run src/util/generate-jwt-secret"
@@ -50,7 +51,7 @@
         "zod": "^4.2.1"
     },
     "optionalDependencies": {
-        "freebind": "^0.2.2",
+        "freebind": "github:thatmarcel/freebind.js#d94e62a61caa738ce4a6c0ecaa98537d6114e410",
         "rate-limit-redis": "^4.3.1",
         "redis": "^4.7.0"
     }
