@@ -25,6 +25,10 @@ const serviceHeaders = {
     }
 }
 
+const hostAddressRewrites = {
+    'pbs.twimg.com': 'dualstack.twimg.twitter.map.fastly.net'
+}
+
 export function closeRequest(controller) {
     try { controller.abort() } catch {}
 }
@@ -41,6 +45,19 @@ export function getHeaders(service) {
     // Converting all header values to strings
     return Object.entries({ ...defaultHeaders, ...serviceHeaders[service] })
         .reduce((p, [key, val]) => ({ ...p, [key]: String(val) }), {})
+}
+
+export function applyHostAddressRewrite(url) {
+    const [originalHost, rewrittenHost] = Object.entries(hostAddressRewrites)
+        .find(([originalHost, _]) => url.includes(`https://${originalHost}`));
+
+    return {
+        url: rewrittenHost ? url.replace(
+            `https://${originalHost}`,
+            `https://${rewrittenHost}`
+        ) : url,
+        hostHeaderValue: originalHost
+    };
 }
 
 export function pipe(from, to, done) {

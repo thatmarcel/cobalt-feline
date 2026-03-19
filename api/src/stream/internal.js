@@ -1,6 +1,6 @@
 import { request } from "undici";
 import { Readable } from "node:stream";
-import { closeRequest, getHeaders, pipe } from "./shared.js";
+import { applyHostAddressRewrite, closeRequest, getHeaders, pipe } from "./shared.js";
 import { handleHlsPlaylist, isHlsResponse, probeInternalHLSTunnel } from "./internal-hls.js";
 
 const CHUNK_SIZE = BigInt(8e6); // 8 MB
@@ -108,11 +108,16 @@ async function handleGenericStream(streamInfo, res) {
     const cleanup = () => res.end();
 
     try {
-        const fileResponse = await request(streamInfo.url, {
+        const {
+            url: fileRequestURL,
+            hostHeaderValue: fileRequestHostHeaderValue
+        } = applyHostAddressRewrite(streamInfo.url);
+
+        const fileResponse = await request(fileRequestURL, {
             headers: {
                 ...Object.fromEntries(streamInfo.headers),
                 ...getHeaders(streamInfo.service),
-                host: undefined
+                host: fileRequestHostHeaderValue
             },
             dispatcher: streamInfo.dispatcher,
             signal,
