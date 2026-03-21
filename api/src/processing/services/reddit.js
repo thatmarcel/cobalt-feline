@@ -1,59 +1,12 @@
 import { resolveRedirectingURL } from "../url.js";
 import { genericUserAgent, env } from "../../config.js";
-import { getCookie, updateCookieValues } from "../cookie/manager.js";
-
-async function getAccessToken() {
-    /* "cookie" in cookiefile needs to contain:
-     * client_id, client_secret, refresh_token
-     * e.g. client_id=bla; client_secret=bla; refresh_token=bla
-     *
-     * you can get these by making a reddit app and
-     * authenticating an account against reddit's oauth2 api
-     * see: https://github.com/reddit-archive/reddit/wiki/OAuth2
-     *
-     * any additional cookie fields are managed by this code and you
-     * should not touch them unless you know what you're doing. **/
-    const cookie = await getCookie('reddit');
-    if (!cookie) return;
-
-    const values = cookie.values(),
-          needRefresh = !values.access_token
-                        || !values.expiry
-                        || Number(values.expiry) < new Date().getTime();
-    if (!needRefresh) return values.access_token;
-
-    const data = await fetch('https://www.reddit.com/api/v1/access_token', {
-        method: 'POST',
-        headers: {
-            'authorization': `Basic ${Buffer.from(
-                [values.client_id, values.client_secret].join(':')
-            ).toString('base64')}`,
-            'content-type': 'application/x-www-form-urlencoded',
-            'user-agent': genericUserAgent,
-            'accept': 'application/json'
-        },
-        body: `grant_type=refresh_token&refresh_token=${encodeURIComponent(values.refresh_token)}`
-    }).then(r => r.json()).catch(() => {});
-    if (!data) return;
-
-    const { access_token, refresh_token, expires_in } = data;
-    if (!access_token) return;
-
-    updateCookieValues(cookie, {
-        ...cookie.values(),
-        access_token, refresh_token,
-        expiry: new Date().getTime() + (expires_in * 1000),
-    });
-
-    return access_token;
-}
+import { createStream } from "../../stream/manage.js";
+import { request } from "undici";
 
 export default async function(obj) {
     let params = obj;
-    const accessToken = await getAccessToken();
     const headers = {
         'user-agent': genericUserAgent,
-        authorization: accessToken && `Bearer ${accessToken}`,
         accept: 'application/json'
     };
 
@@ -62,6 +15,23 @@ export default async function(obj) {
             `https://www.reddit.com/video/${params.shortId}`,
             obj.dispatcher, headers
         );
+    }
+
+    if (params.mediaURL) {
+        const decodedMediaURL = params.mediaURL.startsWith("https%3A%2F%2F")
+            ? decodeURIComponent(params.mediaURL)
+            : params.mediaURL;
+
+        if (decodedMediaURL.startsWith("https://i.redd.it/")) {
+            return {
+                typeId: "proxy",
+                isPhoto: true,
+                urls: decodedMediaURL,
+                filename: `reddit_${decodedMediaURL.replace("https://i.redd.it/", "")}`,
+            }
+        }
+
+        return { error: "fetch.fail" }
     }
 
     if (!params.id && params.shareId) {
@@ -73,13 +43,15 @@ export default async function(obj) {
 
     if (!params?.id) return { error: "fetch.short_link" };
 
-    const url = new URL(`https://www.reddit.com/comments/${params.id}.json`);
+    const url = new URL(`https://old.reddit.com/r/${params.sub}/comments/${params.id}.json`);
 
-    if (accessToken) url.hostname = 'oauth.reddit.com';
-
-    let data = await fetch(
-        url, { headers }
-    ).then(r => r.json()).catch(() => {});
+    let data = await request(
+        url,
+        {
+            headers,
+            dispatcher: obj.dispatcher
+        }
+    ).then(r => r.body.json()).catch(e => console.log(e));
 
     if (!data || !Array.isArray(data)) {
         return { error: "fetch.fail" }
@@ -94,14 +66,43 @@ export default async function(obj) {
         sourceId = params.id;
     }
 
-    if (data?.url?.endsWith('.gif')) return {
-        typeId: "redirect",
-        urls: data.url,
-        filename: `reddit_${sourceId}.gif`,
-    }
+    if (!data?.secure_media?.reddit_video) {
+        if (data?.url?.startsWith("https://i.redd.it")) {
+            return {
+                typeId: "proxy",
+                isPhoto: true,
+                urls: data.url,
+                filename: `reddit_${sourceId}.${data.url.split(".").slice(-1)[0]}`,
+            }
+        }
 
-    if (!data.secure_media?.reddit_video)
-        return { error: "fetch.empty" };
+        if (data?.media_metadata) {
+            const mediaMetadataEntries = Object.entries(data.media_metadata);
+
+            const picker = mediaMetadataEntries.map(([mediaId, mediaInfo], mediaIndex) => {
+                const mediaFileExtension = mediaInfo.m.split("/")[1];
+
+                const proxiedURL = createStream({
+                    service: "reddit",
+                    type: "proxy",
+                    url: `https://i.redd.it/${mediaId}.${mediaFileExtension}`,
+                    filename: `reddit_${sourceId}_${mediaIndex + 1}.${mediaFileExtension}`
+                });
+
+                return {
+                    type: "photo",
+                    url: proxiedURL,
+                    thumb: proxiedURL
+                }
+            });
+
+            return {
+                picker
+            }
+        }
+
+        return { error: "fetch.empty" }
+    }
 
     if (data.secure_media?.reddit_video?.duration > env.durationLimit)
         return { error: "content.too_long" };
@@ -116,8 +117,8 @@ export default async function(obj) {
     }
 
     // test the existence of audio
-    await fetch(audioFileLink, { method: "HEAD" }).then(r => {
-        if (Number(r.status) === 200) {
+    await request(audioFileLink, { method: "HEAD", dispatcher: obj.dispatcher }).then(r => {
+        if (Number(r.statusCode) === 200) {
             audio = true
         }
     }).catch(() => {})
@@ -125,8 +126,8 @@ export default async function(obj) {
     // fallback for videos with variable audio quality
     if (!audio) {
         audioFileLink = `${video.split('_')[0]}_AUDIO_128.mp4`
-        await fetch(audioFileLink, { method: "HEAD" }).then(r => {
-            if (Number(r.status) === 200) {
+        await request(audioFileLink, { method: "HEAD", dispatcher: obj.dispatcher }).then(r => {
+            if (Number(r.statusCode) === 200) {
                 audio = true
             }
         }).catch(() => {})

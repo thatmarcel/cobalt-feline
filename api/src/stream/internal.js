@@ -17,7 +17,7 @@ async function* readChunks(streamInfo, size) {
 
         const chunk = await request(streamInfo.url, {
             headers: {
-                ...getHeaders(streamInfo.service),
+                ...getHeaders(streamInfo.service, streamInfo.url),
                 Range: `bytes=${read}-${read + CHUNK_SIZE}`
             },
             dispatcher: streamInfo.dispatcher,
@@ -58,7 +58,7 @@ async function handleChunkedStream(streamInfo, res) {
         let req, attempts = 3;
         while (attempts--) {
             req = await fetch(streamInfo.url, {
-                headers: getHeaders(streamInfo.service),
+                headers: getHeaders(streamInfo.service, streamInfo.url),
                 method: 'HEAD',
                 dispatcher: streamInfo.dispatcher,
                 signal
@@ -113,12 +113,21 @@ async function handleGenericStream(streamInfo, res) {
             hostHeaderValue: fileRequestHostHeaderValue
         } = applyHostAddressRewrite(streamInfo.url);
 
+        const { host, range, ...headers } = {
+            ...Object.fromEntries(streamInfo.headers),
+            ...getHeaders(streamInfo.service, streamInfo.url)
+        };
+
+        if (range && range !== "undefined") {
+            headers.range = range;
+        }
+
+        if (fileRequestHostHeaderValue) {
+            headers.host = fileRequestHostHeaderValue;
+        }
+
         const fileResponse = await request(fileRequestURL, {
-            headers: {
-                ...Object.fromEntries(streamInfo.headers),
-                ...getHeaders(streamInfo.service),
-                host: fileRequestHostHeaderValue
-            },
+            headers,
             dispatcher: streamInfo.dispatcher,
             signal,
             maxRedirections: 16
@@ -168,7 +177,7 @@ export async function probeInternalTunnel(streamInfo) {
         const signal = AbortSignal.timeout(3000);
         const headers = {
             ...Object.fromEntries(streamInfo.headers || []),
-            ...getHeaders(streamInfo.service),
+            ...getHeaders(streamInfo.service, streamInfo.url),
             host: undefined,
             range: undefined
         };

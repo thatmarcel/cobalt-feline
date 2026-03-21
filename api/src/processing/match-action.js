@@ -104,6 +104,7 @@ export default function({
                 case "snapchat":
                 case "bsky":
                 case "xiaohongshu":
+                case "reddit":
                 case "youtube":
                     params = { picker: r.picker };
                     break;

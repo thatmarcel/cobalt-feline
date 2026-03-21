@@ -25,6 +25,12 @@ const serviceHeaders = {
     }
 }
 
+const domainHeaders = {
+    'i.redd.it': {
+        accept: 'image/*'
+    }
+}
+
 const hostAddressRewrites = {
     'pbs.twimg.com': 'dualstack.twimg.twitter.map.fastly.net',
     'video.twimg.com': 'dualstack.video.twitter.map.fastly.net'
@@ -42,15 +48,18 @@ export function closeResponse(res) {
     return res.end();
 }
 
-export function getHeaders(service) {
+export function getHeaders(service, url) {
     // Converting all header values to strings
-    return Object.entries({ ...defaultHeaders, ...serviceHeaders[service] })
-        .reduce((p, [key, val]) => ({ ...p, [key]: String(val) }), {})
+    return Object.entries({
+        ...defaultHeaders,
+        ...serviceHeaders[service],
+        ...(url && (Object.entries(domainHeaders).find(([d, h]) => url.includes(`https://${d}`)) || [])[1] || {})
+    }).reduce((p, [key, val]) => ({ ...p, [key]: String(val) }), {})
 }
 
 export function applyHostAddressRewrite(url) {
     const [originalHost, rewrittenHost] = Object.entries(hostAddressRewrites)
-        .find(([originalHost, _]) => url.includes(`https://${originalHost}`));
+        .find(([originalHost, _]) => url.includes(`https://${originalHost}`)) || [];
 
     return {
         url: rewrittenHost ? url.replace(

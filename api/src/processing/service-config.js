@@ -89,6 +89,9 @@ export const services = {
             "r/:sub/comments/:id/:title",
             "r/:sub/comments/:id/comment/:commentId",
 
+            // Reddit share links can redirect to "https://www.reddit.com/r/<sub>/comments/<id>/<title>/<idk>/?context=<...>&share_id=<...>&utm_<whatever>=<...>"
+            "r/:sub/comments/:id/:title/:garbage",
+
             "user/:user/comments/:id",
             "user/:user/comments/:id/:title",
             "user/:user/comments/:id/comment/:commentId",
@@ -100,6 +103,7 @@ export const services = {
             "r/:sub/s/:shareId",
 
             "video/:shortId",
+            "media?url=:mediaURL",
         ],
         subdomains: "*",
     },

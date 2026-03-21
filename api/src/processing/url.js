@@ -153,6 +153,11 @@ function cleanURL(url) {
                 limitQuery('p');
             }
             break;
+        case "reddit":
+            if (url.pathname === '/media' && url.searchParams.get('url')) {
+                limitQuery('url');
+            }
+            break;
         case "twitter":
             if (url.searchParams.get('post_id')) {
                 limitQuery('post_id');
