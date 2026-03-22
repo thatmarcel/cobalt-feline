@@ -56,15 +56,34 @@ export const openURL = (url: string) => {
         return alert('error: invalid url!');
     }
 
-    const open = window.open(url, "_blank", "noopener,noreferrer");
-
-    /* if new tab got blocked by user agent, show a saving dialog */
-    if (!open) {
-        return openSavingDialog({
-            url,
-            body: get(t)("dialog.saving.blocked")
-        });
+    if (url.includes("/tunnel?")) {
+        document.location.href = url;
+        return;
     }
+
+    let hasChangedFocus = false;
+
+    const blurEventListener = () => {
+        hasChangedFocus = true;
+        window.removeEventListener("blur", blurEventListener, true);
+    }
+
+    window.addEventListener("blur", blurEventListener, true);
+
+    setTimeout(() => {
+        /* if new tab got blocked, show a saving dialog */
+        if (!hasChangedFocus) {
+            window.removeEventListener("blur", blurEventListener, true);
+
+            return openSavingDialog({
+                url,
+                body: get(t)("dialog.saving.blocked")
+            });
+        }
+    }, 500);
+
+    // window.open always returns null when noopener or noreferrer is passed
+    window.open(url, "_blank", "noopener,noreferrer");
 }
 
 export const shareURL = async (url: string) => {

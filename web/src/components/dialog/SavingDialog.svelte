@@ -65,13 +65,10 @@
                         id="save-download"
                         fill
                         elevated
-                        click={() => {
-                            if (file) {
-                                return openFile(file);
-                            } else if (url) {
-                                return openURL(url);
-                            }
-                        }}
+                        click={file ? () => openFile(file) : () => {}}
+                        linkHref={file ? undefined : url}
+                        linkTarget={url?.includes("/tunnel?") ? undefined : "_blank"}
+                        linkRel={url?.includes("/tunnel?") ? undefined : "noopener noreferrer"}
                     >
                         <IconDownload />
                         {$t("button.download")}
