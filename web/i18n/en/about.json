@@ -9,6 +9,7 @@
 
     "heading.general": "general terms",
     "heading.licenses": "licenses",
+    "heading.fork": "fork",
     "heading.summary": "best way to save what you love",
     "heading.privacy_efficiency": "leading privacy & efficiency",
     "heading.community": "open community",
@@ -16,7 +17,7 @@
     "heading.saving": "saving",
     "heading.encryption": "encryption",
     "heading.plausible": "anonymous traffic analytics",
-    "heading.cloudflare": "web privacy & security",
+    "heading.other_providers": "web privacy & security",
     "heading.responsibility": "user responsibilities",
     "heading.abuse": "reporting abuse",
     "heading.motivation": "motivation",

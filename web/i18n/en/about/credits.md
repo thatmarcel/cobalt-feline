@@ -81,5 +81,23 @@ we had to make frontend source first to stop grifters from profiting off our wor
 other than commercial use, it follows same principles as many open source licenses.
 
 we rely on many open source libraries, but also create & distribute our own.
-you can see the full list of dependencies on [github]({contacts.github})!
+you can see the full list of dependencies on github!
+</section>
+
+<section id="fork">
+<SectionHeading
+    title={$t("about.heading.fork")}
+    sectionId="fork"
+/>
+
+this instance is running a fork of the official cobalt source code.
+
+it includes a few of its own changes as well as a lot of patches from:
+- [canine.tools's fork](https://git.canine.tools/canine.tools/cobalt) by [hyperdefined](https://hyper.lol/).
+- [zImPatrick's fork](https://github.com/zImPatrick/cobalt).
+
+a huge thanks to them, as well as to other contributors to their forks (and to the official cobalt as well of course).
+
+[learn more about this fork on its repository](https://github.com/thatmarcel/cobalt).
+
 </section>

@@ -14,8 +14,7 @@
 cobalt's privacy policy is simple: we don't collect or store anything about you.
 what you do is solely your business, not ours or anyone else's.
 
-these terms are applicable only when using the official cobalt instance.
-in other cases, you may need to contact the instance hoster for accurate info.
+these terms are applicable only to this specific cobalt instance.
 </section>
 
 <section id="local">
@@ -39,8 +38,7 @@ when using saving functionality, cobalt may need to proxy or remux/transcode fil
 if that's the case, then a temporary tunnel is created for this purpose
 and minimal required information about the media is stored for 90 seconds.
 
-on an unmodified & official cobalt instance,
-**all tunnel data is encrypted with a key that only the end user has access to**.
+on this cobalt instance, **all tunnel data is encrypted with a key that only the end user has access to**.
 
 encrypted tunnel data may include:
 - origin service's name.
@@ -60,7 +58,7 @@ cobalt tunnels function like an anonymous proxy.
 if your device supports local processing,
 then encrypted tunnel info includes way less info, because it's returned to client instead.
 
-see the [related source code on github](https://github.com/imputnet/cobalt/tree/main/api/src/stream)
+see the [related source code on github](https://github.com/thatmarcel/cobalt/tree/main/api/src/stream)
 to learn more about how it works.
 </section>
 
@@ -97,21 +95,22 @@ if you opt out, the plausible script will not be loaded at all.
 </section>
 {/if}
 
-<section id="cloudflare">
+<section id="other_providers">
 <SectionHeading
-    title={$t("about.heading.cloudflare")}
-    sectionId="cloudflare"
+    title={$t("about.heading.other_providers")}
+    sectionId="other_providers"
 />
 
-we use cloudflare services for:
-- ddos & abuse protection.
-- bot protection (cloudflare turnstile).
-- hosting & deploying the statically rendered web app (cloudflare workers).
+this instance uses [bunny.net](https://bunny.net) for:
+- ddos & abuse protection (waf).
+- hosting the statically rendered web app (cdn).
+- name servers (dns).
 
-all of these are required to provide the best experience for everyone.
-cloudflare is the most private & reliable provider for all mentioned solutions that we know of.
+bunny.net is a fast, reliable, EU-based, GDPR-compliant provider for the above mentioned services.
+all request and ip address logging options have been turned off, as well as any caching or storing of api requests and tunnels.
 
-cloudflare is fully compliant with GDPR and HIPAA.
+[learn more about bunny.net's commitment to privacy](https://bunny.net/privacy/).
 
-[learn more about cloudflare's dedication to privacy](https://www.cloudflare.com/trust-hub/privacy-and-data-protection/).
+additionally, we use [cloudflare turnstile](https://www.cloudflare.com/application-services/products/turnstile/) for bot protection.
+[learn more about privacy at cloudflare](https://www.cloudflare.com/trust-hub/privacy-and-data-protection/).
 </section>

@@ -107,23 +107,11 @@ plausible не будет загружаться.
 </section>
 {/if}
 
-<section id="cloudflare">
+<section id="other_providers">
 <SectionHeading
-    title={$t("about.heading.cloudflare")}
-    sectionId="cloudflare"
+    title={$t("about.heading.other_providers")}
+    sectionId="other_providers"
 />
 
-мы используем сервисы cloudflare для:
-- защиты от ddos и абьюза.
-- защиты от ботов (cloudflare turnstile).
-- хостинга и деплоя статического веб-приложения (cloudflare workers).
-
-всё это необходимо для обеспечения лучшего опыта для всех. cloudflare — наиболее
-приватный и надёжный провайдер всех упомянутых решений из всех известных нам
-провайдеров.
-
-cloudflare полностью соответствует требованиям GDPR и HIPAA.
-
-[узнай больше о преданности cloudflare к
-приватности](https://www.cloudflare.com/trust-hub/privacy-and-data-protection/).
+мы используем сервисы cloudflare для защиты от ботов (cloudflare turnstile).
 </section>

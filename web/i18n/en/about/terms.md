@@ -9,8 +9,7 @@
     sectionId="general"
 />
 
-these terms are applicable only when using the official cobalt instance.
-in other cases, you may need to contact the instance hoster for accurate info.
+these terms are applicable only to this specific cobalt instance.
 </section>
 
 <section id="saving">
@@ -26,7 +25,7 @@ processing servers operate like advanced proxies and don't ever write any reques
 everything is handled in RAM and permanently purged once the tunnel is completed.
 we have no downloading logs and cannot identify anyone.
 
-you can learn more about how tunnels work in [privacy policy](/about/privacy).
+you can learn more about how tunnels work in our [privacy policy](/about/privacy).
 </section>
 
 <section id="responsibility">
@@ -51,7 +50,9 @@ fair use and credits benefit everyone.
 />
 
 we have no way of detecting abusive behavior automatically because cobalt is fully anonymous.
-however, you can report such activities to us via email and we'll do our best to comply manually: abuse[at]imput.net
+however, you can report such activities to us via email and we'll do our best to comply manually:
+- abuse[at]imput.net (creators of cobalt)
+- abuse[at]shiny.fish (this instance)
 
 **this email is not intended for user support, you will not get a response if your concern is not related to abuse.**
 
