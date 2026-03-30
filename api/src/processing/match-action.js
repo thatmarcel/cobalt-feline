@@ -103,7 +103,6 @@ export default function({
                 case "twitter":
                 case "snapchat":
                 case "bsky":
-                case "xiaohongshu":
                 case "reddit":
                 case "youtube":
                     params = { picker: r.picker };
@@ -147,6 +146,7 @@ export default function({
                     params = { type: r.type };
                     break;
 
+                case "rutube":
                 case "vimeo":
                     if (Array.isArray(r.urls)) {
                         params = { type: "merge" };
@@ -181,7 +181,6 @@ export default function({
                     break;
 
                 case "ok":
-                case "xiaohongshu":
                 case "newgrounds":
                 case "bsky":
                     params = { type: "proxy" };
